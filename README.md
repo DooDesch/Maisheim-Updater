@@ -1,10 +1,23 @@
-# vailheim-mods-updater
+# Maisheim Mods Updater
 
 > An Updater for Server with Modpacks
 
+## Usage
+
+```md
+1. Start the Maisheim Mods Updater.
+2. Select your Valheim Folder.
+3. Install BepInEx
+4. Start Mods Update
+5. ???
+6. Profit
+```
+
+## Development
+
 #### Build Setup
 
-``` bash
+```bash
 # install dependencies
 yarn install
 
