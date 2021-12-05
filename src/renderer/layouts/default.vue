@@ -331,7 +331,7 @@ export default {
 
       const path = result.filePaths[0];
 
-      this.config.set("valheim", path);
+      this.config.set("valheim", path || "");
 
       return;
     },
