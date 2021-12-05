@@ -1,5 +1,5 @@
 {
-  "name": "vailheim-mods-updater",
+  "name": "maisheim-mods-updater",
   "version": "0.0.1",
   "description": "An Updater for Server with Modpacks",
   "main": "./dist/main/index.js",
@@ -12,9 +12,9 @@
   "keywords": [],
   "author": "Doodesch <30825893+DooDesch@users.noreply.github.com>",
   "license": "MIT",
-  "homepage": "https://github.com/michalzaq12/electron-nuxt/blob/master/README.md",
+  "homepage": "https://github.com/DooDesch/Maisheim-Updater",
   "engines": {
-    "node": ">=12.13.0"
+    "node": ">=16.13.0"
   },
   "resolutions": {
     "@types/node": "14.14.9"
