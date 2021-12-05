@@ -3,7 +3,7 @@ const ICONS_DIR = "build/icons/";
 const windowsOS = {
   win: {
     icon: ICONS_DIR + "win-icon.ico",
-    publisherName: "michal",
+    publisherName: "DooDesch",
     target: "nsis",
   },
 
@@ -67,6 +67,6 @@ module.exports = {
     },
   ],
   ...windowsOS,
-  ...linuxOS,
-  ...macOS,
+  // ...linuxOS,
+  // ...macOS,
 };
