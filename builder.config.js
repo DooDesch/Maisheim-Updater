@@ -69,4 +69,10 @@ module.exports = {
   ...windowsOS,
   ...linuxOS,
   ...macOS,
+  publish: {
+    provider: "github",
+    repo: "Maisheim-Updater",
+    owner: "DooDesch",
+    releaseType: "release",
+  },
 };
