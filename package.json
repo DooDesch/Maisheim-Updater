@@ -1,6 +1,6 @@
 {
   "name": "maisheim-mods-updater",
-  "version": "v0.0.2",
+  "version": "v0.0.3",
   "description": "An Updater for Server with Modpacks",
   "main": "./dist/main/index.js",
   "scripts": {
