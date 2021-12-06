@@ -109,8 +109,6 @@ export default {
         });
       }
 
-      console.log(result);
-
       if (!result) return;
 
       if (result.canceled) return;
