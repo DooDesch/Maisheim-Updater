@@ -284,7 +284,7 @@ export default {
       };
 
       this.config = new Conf({
-        projectName: "maisheim-mods-updater",
+        projectName: process.env.npm_package_name || "maisheim-mods-updater",
         schema,
       });
 

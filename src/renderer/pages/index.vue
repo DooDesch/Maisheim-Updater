@@ -79,7 +79,9 @@ export default {
     };
   },
   created() {
-    this.config = new Conf();
+    this.config = new Conf({
+      projectName: process.env.npm_package_name || "maisheim-mods-updater",
+    });
 
     this.setSetting("git", true);
     this.setSetting("valheim", true);
