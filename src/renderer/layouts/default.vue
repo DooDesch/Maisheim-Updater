@@ -267,7 +267,7 @@ export default {
       const schema = {
         git: {
           type: "string",
-          default: ".\\portableGit\\bin",
+          default: process.resourcesPath + "\\portableGit\\bin",
         },
         valheim: {
           type: "string",
@@ -289,7 +289,7 @@ export default {
       });
 
       if (!this.config.has("git")) {
-        this.config.set("git", ".\\portableGit\\bin");
+        this.config.set("git", process.resourcesPath + "\\portableGit\\bin");
       }
 
       if (!this.config.has("valheim")) {
