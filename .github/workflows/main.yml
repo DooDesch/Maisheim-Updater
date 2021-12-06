@@ -25,13 +25,12 @@ jobs:
 
       - name: Build/release Electron app
         uses: michalzaq12/action-electron-nuxt@v1.4.4
+        args: "-p always"
         with:
           # GitHub token, automatically provided to the action
           # (No need to define this secret in the repo settings)
           # type: string
           github_token: ${{ secrets.github_token }}
-
-          args: "-p always"
 
           # If the commit is tagged with a version (e.g. "v1.0.0")
           # type: boolean
