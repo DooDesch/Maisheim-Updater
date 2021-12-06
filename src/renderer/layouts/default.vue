@@ -2,7 +2,11 @@
   <v-app id="inspire">
     <v-app-bar app flat>
       <v-container class="py-0 fill-height">
-        <v-avatar class="mr-10" color="green darken-1" size="32"></v-avatar>
+        <v-avatar
+          class="mr-10"
+          size="32"
+          :color="`${currentStateColor} darken-1`"
+        ></v-avatar>
 
         <!-- <v-btn v-for="link in links" :key="link" text>
           {{ link }}
@@ -297,6 +301,20 @@ export default {
     },
     pluginsFolder() {
       return `${this.bepInExFolder}\\plugins`;
+    },
+    currentStateColor() {
+      if (!this.installed) return "red";
+
+      const array = Object.entries(this.installed);
+      let problems = 0;
+
+      array.forEach(([key, el]) => {
+        if (!el) problems++;
+      });
+
+      if (problems === 0) return "green";
+      if (problems < array.length) return "orange";
+      return "red";
     },
   },
   methods: {
@@ -649,8 +667,8 @@ export default {
   transition: all 0.25s ease-in-out;
   position: relative;
   min-height: 100px;
-  height: 20vh;
-  max-height: 20vh;
+  height: 23vh;
+  max-height: 23vh;
   overflow-y: auto;
 
   &.expanded {
