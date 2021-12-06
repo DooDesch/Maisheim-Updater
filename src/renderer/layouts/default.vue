@@ -269,11 +269,13 @@ export default {
     this.refresh();
   },
   watch: {
+    consoleExpanded() {
+      setTimeout(() => {
+        this.updateConsolePosition();
+      }, 275);
+    },
     console() {
-      this.$nextTick(() => {
-        const el = this.$refs["consoleLogs"].$el;
-        el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-      });
+      this.updateConsolePosition();
     },
   },
   computed: {
@@ -631,6 +633,12 @@ export default {
     },
     addToConsole(msg, type) {
       this.console.push({ type, msg });
+    },
+    updateConsolePosition() {
+      this.$nextTick(() => {
+        const el = this.$refs["consoleLogs"].$el;
+        el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+      });
     },
   },
 };
