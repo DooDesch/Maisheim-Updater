@@ -283,7 +283,10 @@ export default {
         },
       };
 
-      this.config = new Conf(schema);
+      this.config = new Conf({
+        projectName: "maisheim-mods-updater",
+        schema,
+      });
 
       if (!this.config.has("git")) {
         this.config.set("git", ".\\portableGit\\bin");
