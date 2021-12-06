@@ -10,21 +10,19 @@
 
         <v-spacer></v-spacer>
 
-        <v-responsive max-width="260">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                color="error"
-                v-bind="attrs"
-                v-on="on"
-                @click="resetDialog = true"
-              >
-                Reset mods
-              </v-btn>
-            </template>
-            <span>Resets config and plugins to current head</span>
-          </v-tooltip>
-        </v-responsive>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              color="error"
+              v-bind="attrs"
+              v-on="on"
+              @click="resetDialog = true"
+            >
+              Reset mods
+            </v-btn>
+          </template>
+          <span>Resets config and plugins to current head</span>
+        </v-tooltip>
       </v-container>
     </v-app-bar>
 
@@ -192,7 +190,7 @@
 
           <v-col>
             <v-sheet rounded="lg">
-              <nuxt />
+              <nuxt v-if="!loading.config" />
             </v-sheet>
           </v-col>
         </v-row>
@@ -253,6 +251,7 @@ export default {
       mods: undefined,
     },
     loading: {
+      config: true,
       valheim: true,
       bepInEx: true,
       git: true,
@@ -296,6 +295,8 @@ export default {
   },
   methods: {
     async initiateConfig() {
+      this.loading.config = true;
+
       const schema = {
         git: {
           type: "string",
@@ -338,13 +339,19 @@ export default {
 
       while (
         !this.checkIfInstalledValheim() ||
-        !fs.lstatSync(this.valheimFolder).isDirectory()
+        !fs.lstatSync(this.config.get("valheim")).isDirectory()
       ) {
         await this.setValheimFolder();
       }
+
+      this.loading.config = false;
     },
     checkIfInstalledValheim() {
-      this.checkIfInstalled("valheim", ["valheim.exe"], this.valheimFolder);
+      this.checkIfInstalled(
+        "valheim",
+        ["valheim.exe"],
+        this.config.get("valheim")
+      );
 
       return this.installed["valheim"];
     },
@@ -362,7 +369,7 @@ export default {
 
       const path = result.filePaths[0];
 
-      this.config.set("valheim", path || "");
+      await this.config.set("valheim", path || "");
 
       return;
     },
