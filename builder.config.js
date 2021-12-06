@@ -45,6 +45,12 @@ module.exports = {
   productName: "Maisheim Mods Updater",
   appId: "(com.valheim.mods.updater.app)",
   artifactName: "setup-${version}.${ext}",
+  publish: {
+    provider: "github",
+    repo: "Maisheim-Updater",
+    owner: "DooDesch",
+    releaseType: "draft",
+  },
   directories: {
     output: "build",
   },
@@ -69,10 +75,4 @@ module.exports = {
   ...windowsOS,
   ...linuxOS,
   ...macOS,
-  publish: {
-    provider: "github",
-    repo: "Maisheim-Updater",
-    owner: "DooDesch",
-    releaseType: "release",
-  },
 };
