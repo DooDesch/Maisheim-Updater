@@ -241,7 +241,6 @@ export default {
       this.$nextTick(() => {
         const el = this.$refs["consoleLogs"].$el;
         el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-        // el.scrollTop = el.scrollHeight;
       });
     },
   },
