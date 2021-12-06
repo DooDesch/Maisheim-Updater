@@ -5,10 +5,16 @@ const windowsOS = {
     icon: ICONS_DIR + "win-icon.ico",
     publisherName: "DooDesch",
     target: "nsis",
+    publish: ["github"],
   },
 
   nsis: {
-    differentialPackage: true,
+    differentialPackage: false,
+    oneClick: false,
+    allowToChangeInstallationDirectory: true,
+    createDesktopShortcut: true,
+    createStartMenuShortcut: true,
+    shortcutName: "Maisheim Updater",
   },
 };
 
