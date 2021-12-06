@@ -31,11 +31,12 @@
     <v-main class="grey lighten-3">
       <v-container>
         <v-row>
-          <v-col cols="12">
+          <v-col cols="12" style="position: relative">
             <v-sheet
+              dark
               rounded="lg"
               class="pt-4 px-4 pb-1 scroll"
-              dark
+              :class="{ expanded: consoleExpanded }"
               ref="consoleLogs"
             >
               <v-alert
@@ -51,6 +52,23 @@
                 {{ log.msg }}
               </v-alert>
             </v-sheet>
+            <v-fab-transition>
+              <v-btn
+                dark
+                absolute
+                bottom
+                right
+                fab
+                small
+                class="mb-4 mr-4"
+                color="primary"
+                @click="consoleExpanded = !consoleExpanded"
+              >
+                <v-icon>
+                  {{ consoleExpanded ? "mdi-chevron-up" : "mdi-chevron-down" }}
+                </v-icon>
+              </v-btn>
+            </v-fab-transition>
           </v-col>
         </v-row>
 
@@ -123,9 +141,9 @@
                   </v-list-item-content>
                   <v-list-item-action>
                     <v-btn @click="updateMods" icon :loading="loading.mods">
-                      <v-icon color="green" v-if="installed.mods === true"
-                        >mdi-check</v-icon
-                      >
+                      <v-icon color="green" v-if="installed.mods === true">
+                        mdi-check
+                      </v-icon>
                       <v-icon
                         color="orange"
                         v-else-if="installed.mods === 'warning'"
@@ -138,21 +156,35 @@
 
                 <v-divider class="my-2"></v-divider>
 
-                <v-list-item link @click="refresh" color="grey lighten-4">
+                <v-list-item
+                  link
+                  color="grey lighten-4"
+                  :disabled="loading.mods"
+                  @click="refresh"
+                >
                   <v-list-item-content>
                     <v-list-item-title> Refresh </v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
             </v-sheet>
+            <br />
+            <v-btn
+              dark
+              block
+              :color="installed.mods ? 'orange' : 'red'"
+              :disabled="loading.mods"
+              @click="updateMods"
+              v-if="installed.mods === 'warning' || !installed.mods"
+            >
+              {{ installed.mods ? "Update Mods" : "Install Mods" }}
+            </v-btn>
             <v-btn
               block
               color="primary"
-              class="mt-6"
-              :disabled="
-                !installed.mods || installed.mods === 'warning' || loading.mods
-              "
+              :disabled="!installed.mods || loading.mods"
               @click="startGame"
+              v-else
             >
               Start Game
             </v-btn>
@@ -207,11 +239,12 @@ import { ipcRenderer } from "electron";
 import fs from "fs";
 import Conf from "conf";
 import Path from "path";
-import { exec, execSync } from "child_process";
+import { exec } from "child_process";
 
 export default {
   data: () => ({
     console: [],
+    consoleExpanded: false,
     links: ["Dashboard", "Messages", "Profile", "Updates"],
     installed: {
       valheim: undefined,
@@ -241,12 +274,11 @@ export default {
       this.$nextTick(() => {
         const el = this.$refs["consoleLogs"].$el;
         el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-        // el.scrollTop = el.scrollHeight;
       });
     },
   },
   computed: {
-    fullGitPath() {
+    gitExePath() {
       return Path.resolve(`${this.config.get("git")}\\git`);
     },
     valheimFolder() {
@@ -284,7 +316,7 @@ export default {
       };
 
       this.config = new Conf({
-        projectName: "maisheim-mods-updater",
+        projectName: process.env.npm_package_name || "maisheim-mods-updater",
         schema,
       });
 
@@ -306,17 +338,13 @@ export default {
 
       while (
         !this.checkIfInstalledValheim() ||
-        !fs.lstatSync(this.config.get("valheim")).isDirectory()
+        !fs.lstatSync(this.valheimFolder).isDirectory()
       ) {
         await this.setValheimFolder();
       }
     },
     checkIfInstalledValheim() {
-      this.checkIfInstalled(
-        "valheim",
-        ["valheim.exe"],
-        this.config.get("valheim")
-      );
+      this.checkIfInstalled("valheim", ["valheim.exe"], this.valheimFolder);
 
       return this.installed["valheim"];
     },
@@ -351,7 +379,7 @@ export default {
       await this.checkIfInstalled(
         "bepInEx",
         ["winhttp.dll", "doorstop_config.ini"],
-        this.config.get("valheim")
+        this.valheimFolder
       );
     },
     async checkIfInstalledGit() {
@@ -389,14 +417,14 @@ export default {
         return;
       }
 
-      const dir = Path.resolve(this.config.get("valheim") + "/BepInEx");
-      const git = `cd ${dir} && ${this.fullGitPath}`;
+      const dir = Path.resolve(this.bepInExFolder);
+      const git = `cd ${dir} && ${this.gitExePath}`;
 
       this.log("Checking for mod updates");
       await this.run(`${git} fetch --dry-run`, (cb) => {
         if (cb.error || cb.stderr) {
-          this.warn(`Mods outdated: ${cb.error || cb.stdout}`);
-          this.installed.mods = "warning";
+          this.warn(`Mods outdated: ${cb.error || cb.stdout || cb.stderr}`);
+          this.installed.mods = cb.error ? false : "warning";
         } else {
           this.log("Mods are up to date");
         }
@@ -414,8 +442,8 @@ export default {
         return;
       }
 
-      const dir = Path.resolve(this.config.get("valheim") + "/BepInEx");
-      const git = `cd ${dir} && ${this.fullGitPath}`;
+      const dir = Path.resolve(this.bepInExFolder);
+      const git = `cd ${dir} && ${this.gitExePath}`;
       const version = this.config.get("modsVersion");
 
       this.log(`Reset branch ${version}`);
@@ -439,8 +467,8 @@ export default {
         return;
       }
 
-      const dir = Path.resolve(this.config.get("valheim") + "/BepInEx");
-      const git = `cd ${dir} && ${this.fullGitPath}`;
+      const dir = Path.resolve(this.bepInExFolder);
+      const git = `cd ${dir} && ${this.gitExePath}`;
 
       this.run(`${git} fetch --dry-run`, (cb) => {
         const repo = this.config.get("mods");
@@ -512,7 +540,7 @@ export default {
       return true;
     },
     startGame() {
-      const dir = Path.resolve(this.config.get("valheim"));
+      const dir = Path.resolve(this.valheimFolder);
       this.run(`cd ${dir} && .\\valheim.exe`);
     },
     async run(cmd, callback) {
@@ -555,9 +583,16 @@ export default {
 
 <style lang="scss" scoped>
 .scroll {
+  transition: all 0.25s ease-in-out;
+  position: relative;
   min-height: 100px;
   height: 20vh;
   max-height: 20vh;
   overflow-y: auto;
+
+  &.expanded {
+    height: 80vh;
+    max-height: 80vh;
+  }
 }
 </style>
