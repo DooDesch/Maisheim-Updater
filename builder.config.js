@@ -9,12 +9,7 @@ const windowsOS = {
   },
 
   nsis: {
-    differentialPackage: false,
-    oneClick: false,
-    allowToChangeInstallationDirectory: true,
-    createDesktopShortcut: true,
-    createStartMenuShortcut: true,
-    shortcutName: "Maisheim Updater",
+    differentialPackage: true,
   },
 };
 
