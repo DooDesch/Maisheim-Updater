@@ -38,7 +38,6 @@ if (!hasConfigArgument(argumentsArray))
 
 const builder = new ElectronBuilder({
   processArgv: argumentsArray,
-  publish: "always",
 });
 
 const webpackConfig = Webpack.getBaseConfig({
