@@ -5,6 +5,7 @@ const windowsOS = {
     icon: ICONS_DIR + "win-icon.ico",
     publisherName: "DooDesch",
     target: "nsis",
+    publish: ["github"],
   },
 
   nsis: {
@@ -45,7 +46,6 @@ module.exports = {
   productName: "Maisheim Mods Updater",
   appId: "(com.valheim.mods.updater.app)",
   artifactName: "setup-${version}.${ext}",
-  publish: "always",
   directories: {
     output: "build",
   },
