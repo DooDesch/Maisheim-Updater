@@ -246,7 +246,7 @@ export default {
     },
   },
   computed: {
-    fullGitPath() {
+    gitExePath() {
       return Path.resolve(`${this.config.get("git")}\\git`);
     },
     valheimFolder() {
@@ -306,17 +306,13 @@ export default {
 
       while (
         !this.checkIfInstalledValheim() ||
-        !fs.lstatSync(this.config.get("valheim")).isDirectory()
+        !fs.lstatSync(this.valheimFolder).isDirectory()
       ) {
         await this.setValheimFolder();
       }
     },
     checkIfInstalledValheim() {
-      this.checkIfInstalled(
-        "valheim",
-        ["valheim.exe"],
-        this.config.get("valheim")
-      );
+      this.checkIfInstalled("valheim", ["valheim.exe"], this.valheimFolder);
 
       return this.installed["valheim"];
     },
@@ -351,7 +347,7 @@ export default {
       await this.checkIfInstalled(
         "bepInEx",
         ["winhttp.dll", "doorstop_config.ini"],
-        this.config.get("valheim")
+        this.valheimFolder
       );
     },
     async checkIfInstalledGit() {
@@ -389,8 +385,8 @@ export default {
         return;
       }
 
-      const dir = Path.resolve(this.config.get("valheim") + "/BepInEx");
-      const git = `cd ${dir} && ${this.fullGitPath}`;
+      const dir = Path.resolve(this.bepInExFolder);
+      const git = `cd ${dir} && ${this.gitExePath}`;
 
       this.log("Checking for mod updates");
       await this.run(`${git} fetch --dry-run`, (cb) => {
@@ -414,8 +410,8 @@ export default {
         return;
       }
 
-      const dir = Path.resolve(this.config.get("valheim") + "/BepInEx");
-      const git = `cd ${dir} && ${this.fullGitPath}`;
+      const dir = Path.resolve(this.bepInExFolder);
+      const git = `cd ${dir} && ${this.gitExePath}`;
       const version = this.config.get("modsVersion");
 
       this.log(`Reset branch ${version}`);
@@ -439,8 +435,8 @@ export default {
         return;
       }
 
-      const dir = Path.resolve(this.config.get("valheim") + "/BepInEx");
-      const git = `cd ${dir} && ${this.fullGitPath}`;
+      const dir = Path.resolve(this.bepInExFolder);
+      const git = `cd ${dir} && ${this.gitExePath}`;
 
       this.run(`${git} fetch --dry-run`, (cb) => {
         const repo = this.config.get("mods");
@@ -512,7 +508,7 @@ export default {
       return true;
     },
     startGame() {
-      const dir = Path.resolve(this.config.get("valheim"));
+      const dir = Path.resolve(this.valheimFolder);
       this.run(`cd ${dir} && .\\valheim.exe`);
     },
     async run(cmd, callback) {
