@@ -15,6 +15,10 @@ app.whenReady().then(() => {
   ipcMain.handle("dialog.showSaveDialog", async (ev, opts) => {
     return await dialog.showSaveDialog(opts);
   });
+
+  ipcMain.handle("dialog.showMessageBox", async (ev, opts) => {
+    return await dialog.showMessageBox(opts);
+  });
 });
 
 // Load here all startup windows

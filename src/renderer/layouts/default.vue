@@ -233,7 +233,7 @@
 </template>
 
 <script>
-import { ipcRenderer } from "electron";
+import { ipcRenderer, shell } from "electron";
 import fs from "fs";
 import Conf from "conf";
 import Path from "path";
@@ -278,7 +278,11 @@ export default {
   },
   computed: {
     gitExePath() {
-      return Path.resolve(`${this.config.get("git")}\\git`);
+      const git = this.config.get("git");
+      if (git) {
+        return Path.resolve(`${git}\\git`);
+      }
+      return `git`;
     },
     valheimFolder() {
       return this?.config?.get("valheim") || "";
@@ -300,7 +304,7 @@ export default {
       const schema = {
         git: {
           type: "string",
-          default: process.resourcesPath + "\\portableGit\\bin",
+          default: "",
         },
         valheim: {
           type: "string",
@@ -322,7 +326,7 @@ export default {
       });
 
       if (!this.config.has("git")) {
-        this.config.set("git", process.resourcesPath + "\\portableGit\\bin");
+        this.config.set("git", "");
       }
 
       if (!this.config.has("valheim")) {
@@ -390,7 +394,51 @@ export default {
       );
     },
     async checkIfInstalledGit() {
-      await this.checkIfInstalled("git", ["git.exe"], this.config.get("git"));
+      const git = this.config.get("git");
+      if (git) {
+        await this.checkIfInstalled("git", ["git.exe"], git);
+      }
+
+      await this.run(`${this.gitExePath} --version`, async (cb) => {
+        if (cb.error || cb.stderr) {
+          this.warn(`Git error: ${cb.error || cb.stdout || cb.stderr}`);
+          this.installed.git = false;
+          await this.askForGitInstallation();
+        } else {
+          this.log("Git is ready");
+          this.installed.git = true;
+        }
+      });
+
+      this.loading.git = false;
+    },
+    async askForGitInstallation() {
+      const result = await ipcRenderer.invoke("dialog.showMessageBox", {
+        title: `Git not found`,
+        message: `Git not found!`,
+        type: "warning",
+        buttons: ["Yes", "No"],
+        defaultId: 0,
+        cancelId: 1,
+        detail: `Git is required to use this application.\r\nDo you want to download and install git now?`,
+      });
+
+      if (!result) return;
+
+      if (result.response === 1) return;
+
+      await shell.openExternal("https://git-scm.com/download/win");
+
+      await ipcRenderer.invoke("dialog.showMessageBox", {
+        title: `Install git manually`,
+        message: `Install git manually`,
+        type: "info",
+        defaultId: 0,
+        cancelId: 1,
+        detail: `Download and install git.\r\nPress "ok" when you're finished.`,
+      });
+
+      await this.checkIfInstalledGit();
     },
     async checkIfInstalled(item, filesRequired, filesPath) {
       this.loading[item] = true;
@@ -600,6 +648,10 @@ export default {
   &.expanded {
     height: 80vh;
     max-height: 80vh;
+  }
+
+  .v-alert__content {
+    white-space: pre;
   }
 }
 </style>
