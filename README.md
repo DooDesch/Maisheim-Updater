@@ -1,6 +1,6 @@
 # Maisheim Mods Updater
 
-> 🛟 **Need help or found a bug?** Get support at [support.doodesch.de](https://support.doodesch.de).
+> 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/maisheim-updater](https://support.doodesch.de/maisheim-updater).
 
 
 > An Updater for Server with Modpacks
